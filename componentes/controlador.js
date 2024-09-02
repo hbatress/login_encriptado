@@ -1,4 +1,5 @@
 import { loginView, registerView, tokenView, welcomeView } from './vista.js';
+import { login, register, verifyToken } from '../intermediario.js';
 
 // Controlador para manejar las vistas y eventos
 document.addEventListener('DOMContentLoaded', function () {
@@ -19,18 +20,26 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Manejar el envío del formulario de login
-    document.addEventListener('submit', function (e) {
+    document.addEventListener('submit', async function (e) {
+        e.preventDefault(); // Previene el comportamiento por defecto del formulario
+
         if (e.target && e.target.id === 'loginForm') {
-            e.preventDefault();
             const email = e.target.email.value;
             const password = e.target.password.value;
 
             console.log('Login Data:', { email, password });
 
-            // Simular la verificación de acceso y mostrar el formulario de token
-            app.innerHTML = tokenView();
+            try {
+                const result = await login(email, password);
+                console.log('Respuesta del servidor:', result);
+
+                // Suponiendo que si el login es exitoso, mostramos el formulario de token
+                app.innerHTML = tokenView();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+
         } else if (e.target && e.target.id === 'registerForm') {
-            e.preventDefault();
             const username = e.target.username.value;
             const email = e.target.email.value;
             const password = e.target.password.value;
@@ -38,14 +47,33 @@ document.addEventListener('DOMContentLoaded', function () {
 
             console.log('Register Data:', { username, email, password, confirmPassword });
 
-            // Aquí podrías realizar la lógica para manejar el registro
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+
+            try {
+                const result = await register(username, email, password);
+                console.log('Respuesta del servidor:', result);
+
+                // Puedes manejar la respuesta del servidor aquí (mostrar mensajes, redireccionar, etc.)
+            } catch (error) {
+                console.error('Error:', error);
+            }
+
         } else if (e.target && e.target.id === 'tokenForm') {
-            e.preventDefault();
             const code = e.target.code.value;
 
             console.log('Token Data:', { code });
 
-            // Aquí podrías realizar la lógica para manejar la verificación del token
+            try {
+                const result = await verifyToken(code);
+                console.log('Respuesta del servidor:', result);
+
+                // Maneja la respuesta del servidor aquí (mostrar mensajes, redireccionar, etc.)
+            } catch (error) {
+                console.error('Error:', error);
+            }
         }
     });
 });
