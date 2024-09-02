@@ -1,17 +1,15 @@
 const express = require('express');
 const path = require('path');
-const homeRoutes = require('./routes/homeRoutes');
-const apiRoutes = require('./routes/apiRoutes');
+const route = require('./router/router');
 
 const app = express();
 const port = 3000;
 
 // Middleware para servir archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(express.json()); // Agrega esta línea para procesar JSON
 // Usar rutas definidas
-app.use('/', homeRoutes);
-app.use('/api', apiRoutes);
+app.use('/', route);
 
 // Iniciar el servidor
 app.listen(port, () => {
