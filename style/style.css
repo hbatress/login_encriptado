@@ -1,0 +1,9 @@
+body{
+    background-image: url("../img/fondo.jpeg");
+}
+.fondo{
+    background-color: rgba(0, 0, 0, 0.39);
+}
+.fondo2{
+    background-color: black;
+}
