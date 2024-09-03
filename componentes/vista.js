@@ -68,9 +68,7 @@ export function welcomeView() {
     return `
         <div id="welcome" class="container p-4 rounded fondo2 text-center" style="max-width: 600px;">
             <h1 class="display-4">Welcome!</h1>
-            <p class="lead">Thank you for visiting our website. Please log in or register to continue.</p>
-            <a href="#" class="btn btn-primary btn-lg" id="showLogin">Login</a>
-            <a href="#" class="btn btn-secondary btn-lg ms-2" id="showRegister">Register</a>
+            <p class="lead">Thank you for visiting our website.</p>
         </div>
     `;
 }

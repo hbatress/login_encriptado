@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log('Register Data:', result);
     
                 // Aquí podrías redirigir al usuario a la vista de login o mostrar un mensaje
-                app.innerHTML = loginView();
+                app.innerHTML = welcomeView();
             } catch (error) {
                 console.error('Error en addUser:', error);
                 showError('Error al registrar el usuario. Inténtalo de nuevo.');
