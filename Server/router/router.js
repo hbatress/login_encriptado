@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const db = require('../../data/database'); 
 const bcrypt = require('bcrypt');
+const enviarCorreo = require('../sms');
+const generarToken = require('../token');
+
 
 router.get('/usuarios', (req, res) => {
     db.query('SELECT * FROM users', (err, results) => {
@@ -73,5 +76,41 @@ router.post('/usuarios/regist', async (req, res) => {
     }
 });
 
+router.post('/api/tokens', async (req, res) => {
+    try {
+        const { user_id, destinatario } = req.body;
+
+        if (!user_id || !destinatario) {
+            return res.status(400).json({ error: 'Faltan parámetros' });
+        }
+
+        const token = generarToken();
+
+        // Calcular la hora de expiración (60 segundos desde ahora)
+        const expirationTime = new Date(Date.now() + 60 * 1000); // 60 segundos = 60 * 1000 milisegundos
+
+        const query = 'INSERT INTO mfa_tokens (user_id, token, expiration_time) VALUES (?, ?, ?)';
+        const values = [user_id, token, expirationTime];
+
+        // Usar una promesa para manejar la consulta de base de datos
+        await new Promise((resolve, reject) => {
+            db.query(query, values, (err, results) => {
+                if (err) {
+                    return reject(err); // Rechazar la promesa si hay un error
+                }
+                resolve(results); // Resolver la promesa si la consulta es exitosa
+            });
+        });
+
+        // Enviar el correo con el token
+        enviarCorreo(destinatario, token);
+
+        res.status(201).json({ message: 'Token guardado y correo enviado', token });
+
+    } catch (error) {
+        console.error('Error al guardar el token:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
 
 module.exports = router;
