@@ -1,5 +1,6 @@
 import { loginView, registerView, tokenView, welcomeView } from './vista.js';
-import { addUser, loginUser } from '../intermediario.js';
+import { addUser, loginUser,createToken,verifyToken } from '../intermediario.js';
+import { setCookie, getCookie, eraseCookie } from '../cookieUtils.js';
 
 // Controlador para manejar las vistas y eventos
 document.addEventListener('DOMContentLoaded', function () {
@@ -50,12 +51,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 const result = await loginUser(email, password);
                 console.log('Login Data:', result);
     
+        // Guardar ID, correo y contraseña en cookies (NO recomendado para contraseñas)
+        setCookie('user_id', result.userId, 1); // Guardar por 1 día
+        setCookie('email', email, 1); // Guardar por 1 día
+        setCookie('password', password, 1); // NO recomendado
+
+            // Si el inicio de sesión es exitoso, generar y enviar el token
+            const user_id = result.userId; // Asegúrate de ajustar esto según tu respuesta del servidor
+            console.log('ID:', user_id);
+            await createToken(user_id, email);
+            console.log('Token generado y enviado al correo electrónico.');
+
                 // Simular la verificación de acceso y mostrar el formulario de token
                 app.innerHTML = tokenView();
             } catch (error) {
                 console.error('Error en loginUser:', error);
                 showError('Contraseña o correo electrónico incorrecto.');
             }
+
         } else if (e.target && e.target.id === 'registerForm') {
             e.preventDefault();
             const username = e.target.username.value;
@@ -94,13 +107,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 showError('Por favor, ingrese el código de verificación.');
                 return;
             }
-    
+        // Leer ID y correo de las cookies
+        const userId = getCookie('user_id');
+        const email = getCookie('email');
             try {
-                const result = await verifyToken(code);
+                const result = await verifyToken(userId, code);
                 console.log('Token Data:', result);
     
                 // Aquí podrías manejar la verificación del token
-                app.innerHTML = welcomeView();
+                if (result.message === 'Token válido') {
+                    app.innerHTML = welcomeView(); // Muestra la vista de bienvenida
+                } else {
+                    showError('Código de verificación incorrecto o expirado.');
+                }
             } catch (error) {
                 console.error('Error en verifyToken:', error);
                 showError('Código de verificación incorrecto.');

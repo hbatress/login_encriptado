@@ -113,4 +113,42 @@ router.post('/api/tokens', async (req, res) => {
     }
 });
 
+
+router.post('/api/verify-token', async (req, res) => {
+    try {
+        const { user_id, token } = req.body;
+
+        if (!user_id || !token) {
+            return res.status(400).json({ error: 'Faltan parámetros' });
+        }
+
+        // Consultar la base de datos para encontrar el token
+        const query = 'SELECT * FROM mfa_tokens WHERE user_id = ? AND token = ? AND expiration_time > NOW()';
+        const values = [user_id, token];
+
+        // Usar una promesa para manejar la consulta de base de datos
+        const result = await new Promise((resolve, reject) => {
+            db.query(query, values, (err, results) => {
+                if (err) {
+                    return reject(err); // Rechazar la promesa si hay un error
+                }
+                resolve(results); // Resolver la promesa si la consulta es exitosa
+            });
+        });
+
+        // Verificar si se encontró un resultado
+        if (result.length > 0) {
+            res.status(200).json({ message: 'Token válido' });
+        } else {
+            res.status(400).json({ error: 'Token inválido o expirado' });
+        }
+
+    } catch (error) {
+        console.error('Error al verificar el token:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+
+
 module.exports = router;
