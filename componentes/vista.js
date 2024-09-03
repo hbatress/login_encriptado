@@ -18,6 +18,7 @@ export function loginView() {
                 <p class="text-center mt-2 mb-0">Don't have an account? <a href="#" class="link-info text-decoration-none" id="showRegister">Signup</a></p>
             </form>
         </div>
+
     `;
 }
 
