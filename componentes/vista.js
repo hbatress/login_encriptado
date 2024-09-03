@@ -69,6 +69,7 @@ export function welcomeView() {
         <div id="welcome" class="container p-4 rounded fondo2 text-center" style="max-width: 600px;">
             <h1 class="display-4">Welcome!</h1>
             <p class="lead">Thank you for visiting our website.</p>
+            <button class="btn  badge text-bg-danger" id="Cerrar">Cerrar sesión</button>
         </div>
     `;
 }

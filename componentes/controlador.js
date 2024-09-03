@@ -126,4 +126,25 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
+ // Función para agregar el manejador del botón de cerrar sesión
+ function addLogoutButtonListener() {
+    const logoutButton = document.getElementById('Cerrar');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+            // Elimina las cookies al cerrar sesión
+            console.error('clic en cerrar');
+            deleteCookie('user_id');
+            deleteCookie('email');
+            deleteCookie('password');
+
+            // Muestra la vista de inicio de sesión
+            app.innerHTML = loginView();
+        });
+    }
+}
+
+// Función para eliminar cookies
+function deleteCookie(name) {
+    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+}
 });
